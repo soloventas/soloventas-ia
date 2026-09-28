@@ -1,0 +1,73 @@
+// Esquema de base de datos — Etapa 1 (MVP)
+// Cubre: usuario del panel, catálogo de productos con variantes,
+// y el contenido que generará el equipo de marketing / revisará el de calidad.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  nombre       String
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Producto {
+  id          String   @id @default(cuid())
+  codigo      String   @unique
+  nombre      String
+  descripcion String?
+  categoria   String?
+  precio      Decimal  @db.Decimal(10, 2)
+  imagenUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  variantes VarianteProducto[]
+  contenido ContenidoGenerado[]
+}
+
+// Cada combinación de color / talle con su propio stock.
+model VarianteProducto {
+  id         String   @id @default(cuid())
+  productoId String
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  color      String?
+  talle      String?
+  stock      Int      @default(0)
+
+  @@unique([productoId, color, talle])
+}
+
+enum TipoContenido {
+  IMAGEN
+  VIDEO
+  TEXTO
+}
+
+enum EstadoContenido {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+}
+
+// Lo que produce el equipo de Marketing y revisa el equipo de Calidad.
+// Por ahora se carga a mano; en la Etapa 1.1 lo va a completar el agente de IA.
+model ContenidoGenerado {
+  id         String          @id @default(cuid())
+  productoId String
+  producto   Producto        @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  tipo       TipoContenido
+  contenido  String // URL de la imagen/video, o el texto publicitario
+  estado     EstadoContenido @default(PENDIENTE)
+  notas      String? // motivo de rechazo, si corresponde
+  createdAt  DateTime        @default(now())
+  revisadoAt DateTime?
+}
