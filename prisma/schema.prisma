@@ -19,16 +19,59 @@ model Usuario {
   createdAt    DateTime @default(now())
 }
 
+// Categorías propias del catálogo (Gorras, Accesorios, etc.), para
+// dividir los productos y poder filtrarlos/agruparlos.
+model Categoria {
+  id        String     @id @default(cuid())
+  nombre    String     @unique
+  createdAt DateTime   @default(now())
+  productos Producto[]
+}
+
+enum Moneda {
+  ARS
+  USD
+}
+
 model Producto {
-  id          String   @id @default(cuid())
-  codigo      String   @unique
+  id          String     @id @default(cuid())
+  codigo      String     @unique // alfanumérico, único (ej: G9012B)
   nombre      String
   descripcion String?
-  categoria   String?
-  precio      Decimal  @db.Decimal(10, 2)
-  imagenUrl   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  categoriaId String?
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+
+  // Si queda vacío, se considera producto propio (sin proveedor externo).
+  proveedor String?
+
+  // Precios: costo + ganancia % informan el precio de venta, pero el
+  // precio de venta final queda como el valor que se usa en el catálogo.
+  // Regla: el precio de venta no puede ser menor al costo.
+  precioCosto        Decimal? @db.Decimal(12, 2)
+  gananciaPorcentaje Decimal? @db.Decimal(6, 2)
+  precio             Decimal  @db.Decimal(12, 2) // precio de venta final
+  moneda             Moneda   @default(ARS)
+
+  // Si no admite color ni talle, se usa este stock general del producto.
+  admiteColor Boolean @default(false)
+  admiteTalle Boolean @default(false)
+  stock       Int?    @default(0)
+
+  compraMinima Decimal @default(1) @db.Decimal(10, 3) // admite fracción
+
+  // Descuento por cantidad: a partir de "descuentoCantidadMinima"
+  // unidades, se aplica "descuentoPorcentaje" % de descuento.
+  descuentoCantidadMinima Int?
+  descuentoPorcentaje     Decimal? @db.Decimal(5, 2)
+
+  visibleSinRegistrarse Boolean @default(true)
+  enOferta              Boolean @default(false)
+  esNuevo               Boolean @default(true)
+  activo                Boolean @default(true)
+
+  imagenUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   variantes VarianteProducto[]
   contenido ContenidoGenerado[]

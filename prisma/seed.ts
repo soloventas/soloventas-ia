@@ -27,8 +27,10 @@ async function main() {
       codigo: "G9012B",
       nombre: "Gorra vintage lavada",
       descripcion: "Gorra estilo vintage con lavado desgastado.",
-      categoria: "Gorras",
+      categoria: { connectOrCreate: { where: { nombre: "Gorras" }, create: { nombre: "Gorras" } } },
       precio: 8500,
+      admiteColor: true,
+      stock: null,
       variantes: {
         create: [
           { color: "Negro", stock: 20 },
@@ -50,8 +52,15 @@ async function main() {
       codigo: "TUITI-16",
       nombre: "Colines de cabello Tuiti N° 16",
       descripcion: "Bolsa x24 unidades, talle 16x24.",
-      categoria: "Accesorios de cabello",
+      categoria: {
+        connectOrCreate: {
+          where: { nombre: "Accesorios de cabello" },
+          create: { nombre: "Accesorios de cabello" },
+        },
+      },
       precio: 3200,
+      admiteColor: true,
+      stock: null,
       variantes: {
         create: [
           { color: "Color", stock: 30 },

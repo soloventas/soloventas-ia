@@ -7,7 +7,7 @@ sube a un servidor.
 ## Qué incluye esta versión
 
 - Login con sesión (usuario y contraseña propios, sin servicios externos).
-- Catálogo de productos: alta, edición, baja, variantes de color/talle con stock.``
+- Catálogo de productos: alta, edición, baja, variantes de color/talle con stock.
 - Pantalla de "Contenido para aprobar": lo que el equipo de Marketing carga
   (por ahora a mano; el agente de IA se conecta en una próxima iteración)
   y el equipo de Calidad aprueba o rechaza.
@@ -86,7 +86,3 @@ prisma/seed.ts       → datos de ejemplo
 4. Cuando esté listo para producción: elegir dónde alojarlo (Vercel para el
    panel + una base Postgres administrada, por ejemplo Neon o Supabase, son
    las opciones más simples para no mantener un servidor propio).
-
-
-
-   actualizado

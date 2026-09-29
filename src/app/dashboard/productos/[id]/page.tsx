@@ -9,7 +9,7 @@ export default async function EditarProductoPage({
 }) {
   const producto = await prisma.producto.findUnique({
     where: { id: params.id },
-    include: { variantes: true },
+    include: { variantes: true, categoria: true },
   });
 
   if (!producto) notFound();
@@ -25,8 +25,29 @@ export default async function EditarProductoPage({
           codigo: producto.codigo,
           nombre: producto.nombre,
           descripcion: producto.descripcion ?? "",
-          categoria: producto.categoria ?? "",
+          categoriaId: producto.categoriaId ?? "",
+          proveedor: producto.proveedor ?? "",
+          precioCosto: producto.precioCosto ? String(producto.precioCosto) : "",
+          gananciaPorcentaje: producto.gananciaPorcentaje
+            ? String(producto.gananciaPorcentaje)
+            : "",
           precio: Number(producto.precio),
+          moneda: producto.moneda,
+          admiteColor: producto.admiteColor,
+          admiteTalle: producto.admiteTalle,
+          stock: producto.stock ?? 0,
+          compraMinima: String(producto.compraMinima),
+          descuentoCantidadMinima:
+            producto.descuentoCantidadMinima != null
+              ? String(producto.descuentoCantidadMinima)
+              : "",
+          descuentoPorcentaje: producto.descuentoPorcentaje
+            ? String(producto.descuentoPorcentaje)
+            : "",
+          visibleSinRegistrarse: producto.visibleSinRegistrarse,
+          enOferta: producto.enOferta,
+          esNuevo: producto.esNuevo,
+          activo: producto.activo,
         }}
         variantes={producto.variantes.map((v) => ({
           color: v.color ?? "",
